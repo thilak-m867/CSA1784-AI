@@ -1,0 +1,42 @@
+from collections import deque
+
+def bfs_shortest_path(graph, start, goal):
+    # Step 1: Initialise a queue with the starting node and an empty visited set
+    # The queue stores tuples of (current_node, path_to_node)
+    queue = deque([(start, [start])])
+    visited = set()
+
+    # Step 5: Repeat until the queue is empty
+    while queue:
+        # Step 2: Dequeue the front node
+        (vertex, path) = queue.popleft()
+
+        if vertex not in visited:
+            # If it equals the goal, return the path
+            if vertex == goal:
+                return path
+            
+            # Step 3: Mark the node as visited
+            visited.add(vertex)
+
+            # Step 4: Enqueue all unvisited neighbours with the updated path
+            for neighbor in graph.get(vertex, []):
+                if neighbor not in visited:
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    queue.append((neighbor, new_path))
+    
+    return None
+
+# Example Usage:
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+path = bfs_shortest_path(graph, 'A', 'F')
+print(f"Shortest path from A to F: {path}")
