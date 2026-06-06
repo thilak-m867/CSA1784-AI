@@ -1,0 +1,94 @@
+import heapq
+
+# Helper function to compute Manhattan distance heuristic (h-score)
+def heuristic(current, goal):
+    x1, y1 = current
+    x2, y2 = goal
+    return abs(x1 - x2) + abs(y1 - y2)
+
+def reconstruct_path(came_from, current):
+    # Step 3: Reconstruct and return the path
+    total_path = [current]
+    while current in came_from:
+        current = came_from[current]
+        total_path.append(current)
+    return total_path[::-1]  # Reverse to get path from start to goal
+
+def a_star_search(grid, start, goal):
+    max_r = len(grid)
+    max_c = len(grid[0])
+    
+    # Step 1: Initialise the open list with the start node; set g-score to 0.
+    # The open list stores elements as tuples: (f_score, node_coordinates)
+    open_list = []
+    heapq.heappush(open_list, (0 + heuristic(start, goal), start))
+    
+    # Track g-scores with a dictionary, defaulting unvisited nodes to infinity
+    g_score = {start: 0}
+    
+    # Track node parents for path reconstruction
+    came_from = {}
+    
+    # Step 4: Keep a closed list to avoid revisiting processed nodes
+    closed_list = set()
+    
+    # Step 7: Repeat until the goal is found or the open list is empty.
+    while open_list:
+        # Step 2: Select the node with the lowest f = g + h from the open list.
+        current_f, current = heapq.heappop(open_list)
+        
+        # Step 3: If it is the goal, reconstruct and return the path.
+        if current == goal:
+            return reconstruct_path(came_from, current)
+            
+        # Step 4: Move it to the closed list.
+        closed_list.add(current)
+        
+        # Define 4-directional movement (Up, Down, Left, Right)
+        r, c = current
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        
+        for dr, dc in directions:
+            neighbour = (r + dr, c + dc)
+            
+            # Ensure neighbour is within grid bounds and not an obstacle (0 represents obstacle)
+            if 0 <= neighbour[0] < max_r and 0 <= neighbour[1] < max_c:
+                if grid[neighbour[0]][neighbour[1]] == 0:  # Obstacle check
+                    continue
+                if neighbour in closed_list:
+                    continue
+                    
+                # Step 5: For each neighbour, compute tentative g-score.
+                # Distance from a cell to its immediate neighbour is 1
+                tentative_g_score = g_score[current] + 1
+                
+                # Step 6: If better, update came_from, g-score, and push to open list.
+                if neighbour not in g_score or tentative_g_score < g_score[neighbour]:
+                    came_from[neighbour] = current
+                    g_score[neighbour] = tentative_g_score
+                    f_score = tentative_g_score + heuristic(neighbour, goal)
+                    heapq.heappush(open_list, (f_score, neighbour))
+                    
+    return None  # Open list is empty and goal was never reached
+
+# --- Execute the Program ---
+
+# Define a 5x5 grid map. 1 = Walkable space, 0 = Obstacle/Wall
+grid_map = [
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 0, 1],
+    [0, 0, 1, 1, 1],
+    [1, 1, 1, 1, 1]
+]
+
+start_pos = (0, 0)
+goal_pos = (4, 4)
+
+path_result = a_star_search(grid_map, start_pos, goal_pos)
+
+if path_result:
+    print(f"Goal Reached! Optimal Path coordinates:")
+    print(" -> ".join(map(str, path_result)))
+else:
+    print("No path could be found to the destination.")
