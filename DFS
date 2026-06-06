@@ -1,0 +1,41 @@
+# Step 1: Representing the graph using an adjacency list
+# Example graph layout:
+#     A --- B
+#     |     |
+#     C --- D --- E
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D'],
+    'C': ['A', 'D'],
+    'D': ['B', 'C', 'E'],
+    'E': ['D']
+}
+
+# Step 1: Initialize a visited set globally or pass it through parameters
+def dfs_recursive(graph, node, visited=None):
+    if visited is None:
+        visited = set()
+        
+    # Step 2: Start DFS from the given node; add it to visited.
+    visited.add(node)
+    print(f"Visited: {node}")  # Optional trace to see the traversal order
+    
+    # Step 3 & 4: For each unvisited neighbour, recursively call DFS until all reachable nodes are visited
+    for neighbour in graph[node]:
+        if neighbour not in visited:
+            dfs_recursive(graph, neighbour, visited)
+            
+    # Step 5: Return the visited set
+    return visited
+
+# --- Running the Traversal ---
+start_vertex = 'A'
+print(f"Starting Depth-First Search from node '{start_vertex}':")
+print("-" * 40)
+
+visited_nodes = dfs_recursive(graph, start_vertex)
+
+print("-" * 40)
+print("Traversal complete!")
+print("Final Visited Set:", visited_nodes)
+
