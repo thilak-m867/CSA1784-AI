@@ -1,0 +1,66 @@
+# Step 1: Build a distance matrix from the list of cities.
+# Representing a complete graph where distance_matrix[i][j] is the distance from city i to city j.
+# Example with 4 cities (0, 1, 2, 3):
+distance_matrix = [
+    [0, 10, 15, 20],  # Distances from City 0
+    [10, 0, 35, 25],  # Distances from City 1
+    [15, 35, 0, 30],  # Distances from City 2
+    [20, 25, 30, 0]   # Distances from City 3
+]
+
+def solve_tsp_nearest_neighbour(matrix):
+    num_cities = len(matrix)
+    
+    # Step 2: Start from city 0; mark it as visited.
+    current_city = 0
+    tour = [current_city]
+    
+    # Track unvisited cities using a set
+    unvisited = set(range(1, num_cities))
+    
+    # Step 5: Initialize total distance accumulation
+    total_distance = 0
+    
+    print(f"Starting TSP Tour from City {current_city}")
+    print("-" * 45)
+    
+    # Repeat until all cities are visited
+    while unvisited:
+        nearest_city = None
+        min_distance = float('inf')
+        
+        # Step 3: Find the nearest unvisited city
+        for city in unvisited:
+            distance = matrix[current_city][city]
+            if distance < min_distance:
+                min_distance = distance
+                nearest_city = city
+                
+        print(f"From City {current_city} -> Nearest unvisited is City {nearest_city} (Distance: {min_distance})")
+        
+        # Step 4: Remove the city from the unvisited set
+        unvisited.remove(nearest_city)
+        
+        # Step 5: Accumulate the total distance and update the tour path
+        total_distance += min_distance
+        tour.append(nearest_city)
+        
+        # Move the salesman's position to the newly selected city
+        current_city = nearest_city
+
+    # Step 6: Return to the starting city and report the tour and distance.
+    return_distance = matrix[current_city][tour[0]]
+    total_distance += return_distance
+    tour.append(tour[0])  # Completes the cycle back to city 0
+    
+    print(f"From City {current_city} -> Returning to Starting City {tour[0]} (Distance: {return_distance})")
+    print("-" * 45)
+    
+    return tour, total_distance
+
+
+# --- Execute the Program ---
+final_tour, final_distance = solve_tsp_nearest_neighbour(distance_matrix)
+
+print("Final Tour Pathway :", " -> ".join(map(str, final_tour)))
+print("Total Path Distance:", final_distance)
