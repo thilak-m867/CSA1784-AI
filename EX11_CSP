@@ -1,0 +1,65 @@
+# Step 1: Define regions (variables) and their colour domains
+# Variables represent the regions to color.
+regions = ['A', 'B', 'C', 'D', 'E']
+
+# Domain represents the available colors for each region.
+colors_domain = ['Red', 'Green', 'Blue']
+
+# Step 2: Define adjacency constraints (Adjacency list mapping)
+# A region is paired with its direct neighbors.
+neighbors = {
+    'A': ['B', 'C', 'D'],
+    'B': ['A', 'C', 'E'],
+    'C': ['A', 'B', 'D', 'E'],
+    'D': ['A', 'C'],
+    'E': ['B', 'C']
+}
+
+# Step 4: Check consistency: the colour of the current region must not conflict with neighbours
+def is_consistent(region, color, assignment):
+    for neighbor in neighbors[region]:
+        # If a neighbor already has a color assigned and it matches the current color, it's inconsistent
+        if neighbor in assignment and assignment[neighbor] == color:
+            return False
+    return True
+
+# Step 3: Use backtracking to assign colours to each region
+def backtrack_map_coloring(assignment={}):
+    # Step 6: Return the assignment when all regions are coloured (Base case)
+    if len(assignment) == len(regions):
+        return assignment
+        
+    # Select the next unassigned region
+    unassigned_regions = [r for r in regions if r not in assignment]
+    current_region = unassigned_regions[0]
+    
+    # Try colors from the domain sequentially
+    for color in colors_domain:
+        # Step 4: Check consistency
+        if is_consistent(current_region, color, assignment):
+            # Assign the valid color to the region
+            assignment[current_region] = color
+            
+            # Step 5: If consistent, recurse to color the next region
+            result = backtrack_map_coloring(assignment)
+            if result is not None:
+                return result
+                
+            # Step 5 (otherwise): Backtrack by removing the assignment if it leads to a dead end
+            del assignment[current_region]
+            
+    return None
+
+# --- Run the Program ---
+print("Starting Map Coloring Backtracking Algorithm...")
+print("-" * 50)
+
+solution = backtrack_map_coloring()
+
+if solution:
+    print("Solution Found! Regional Color Assignments:")
+    for region, color in solution.items():
+        print(f"Region {region} -> {color}")
+else:
+    print("No valid color assignment could be found with the given constraints.")
+    
