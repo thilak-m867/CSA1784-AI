@@ -1,0 +1,80 @@
+def print_board(board):
+    # Helper function to print the current board configuration visually
+    print("\n")
+    print(f" {board[0]} | {board[1]} | {board[2]} ")
+    print("---|---|---")
+    print(f" {board[3]} | {board[4]} | {board[5]} ")
+    print("---|---|---")
+    print(f" {board[6]} | {board[7]} | {board[8]} ")
+    print("\n")
+
+def check_win(board, player):
+    # Step 4: After each move, check for a win (3 in a row/column/diagonal)
+    win_conditions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
+        [0, 4, 8], [2, 4, 6]              # Diagonals
+    ]
+    for condition in win_conditions:
+        if board[condition[0]] == board[condition[1]] == board[condition[2]] == player:
+            return True
+    return False
+
+def check_draw(board):
+    # Step 5: Check for a draw if all positions are filled
+    # If there are no empty spaces (' ') left, the game is a draw
+    return ' ' not in board
+
+def play_game():
+    print("Welcome to Tic Tac Toe!")
+    print("Positions are layout as numbers 1 through 9:")
+    print(" 1 | 2 | 3 \n---|---|---\n 4 | 5 | 6 \n---|---|---\n 7 | 8 | 9 ")
+    print("-" * 30)
+
+    # Step 1: Initialise a 3x3 board with empty spaces
+    # Represented as a flat list of 9 elements for simplicity
+    board = [' '] * 9
+    
+    # Starting player
+    current_player = 'X'
+    
+    # Step 6: Continue until a winner is found or the game is drawn
+    while True:
+        print_board(board)
+        
+        # Step 2: Players X and O take turns entering a position (1–9)
+        try:
+            move = int(input(f"Player {current_player}, enter your move (1-9): ")) - 1
+        except ValueError:
+            print("Invalid input! Please enter a number between 1 and 9.")
+            continue
+            
+        # Validate entry bounds
+        if not (0 <= move <= 8):
+            print("Out of bounds! Choose a position from 1 to 9.")
+            continue
+            
+        # Step 3: Place the player's symbol at the chosen position if empty
+        if board[move] == ' ':
+            board[move] = current_player
+        else:
+            print("That position is already taken! Try another spot.")
+            continue  # Re-loops without changing turns
+            
+        # Step 4: Check for a win
+        if check_win(board, current_player):
+            print_board(board)
+            print(f"Congratulations! Player {current_player} wins the game!")
+            break
+            
+        # Step 5: Check for a draw
+        if check_draw(board):
+            print_board(board)
+            print("The game is a draw!")
+            break
+            
+        # Alternate turns between players X and O
+        current_player = 'O' if current_player == 'X' else 'X'
+
+# Run the game loop
+play_game()
