@@ -1,0 +1,19 @@
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# Step 1: Load dataset
+iris = load_iris()
+
+# Step 2: Split data into training (70%) and testing (30%) sets
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.3, random_state=42)
+
+# Step 3 & 4: Create instance and train classifier using fit()
+clf = DecisionTreeClassifier(random_state=42).fit(X_train, y_train)
+
+# Step 5: Predict labels for the test set
+y_pred = clf.predict(X_test)
+
+# Step 6: Compute and print accuracy
+print(f"Accuracy: {accuracy_score(y_test, y_pred) * 100:.2f}%")
