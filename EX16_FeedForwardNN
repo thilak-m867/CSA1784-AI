@@ -1,0 +1,31 @@
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.utils import to_categorical
+
+# Step 1: Load the Iris dataset and split into train/test sets (80/20 split)
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.2, random_state=42)
+
+# Step 2: One-hot encode the target labels
+y_train_encoded = to_categorical(y_train)
+y_test_encoded = to_categorical(y_test)
+
+# Step 3: Build a Sequential model with one hidden Dense layer (ReLU) and output layer (Softmax)
+model = Sequential([
+    Dense(8, activation='relu', input_shape=(4,)),  # Hidden layer with 8 neurons, input of 4 features
+    Dense(3, activation='softmax')                 # Output layer with 3 neurons (one per Iris class)
+])
+
+# Step 4: Compile with SGD optimizer and categorical cross-entropy loss
+model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Step 5: Train the model for 50 epochs (verbose=0 suppresses output logs for brevity)
+print("Training the neural network for 50 epochs...")
+model.fit(X_train, y_train_encoded, epochs=50, batch_size=4, verbose=0)
+
+# Step 6: Evaluate and print accuracy on the test set
+loss, accuracy = model.evaluate(X_test, y_test_encoded, verbose=0)
+print(f"\nTest Dataset Accuracy: {accuracy * 100:.2f}%")
