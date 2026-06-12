@@ -1,0 +1,88 @@
+import math
+
+# Define the evaluate function to score a game state at the terminal depth
+def evaluate(node_index, scores):
+    return scores[node_index]
+
+# Steps 1-6: Implement the recursive Alpha-Beta Pruning function
+# Step 1: Extend Minimax with alpha (best for MAX) and beta (best for MIN) parameters.
+def alpha_beta_minimax(depth, node_index, is_maximizing, scores, target_depth, alpha, beta):
+    # Check base case (terminal layer reached)
+    if depth == target_depth:
+        return evaluate(node_index, scores)
+    
+    # Calculate child indices for a binary tree
+    left_child = node_index * 2
+    right_child = node_index * 2 + 1
+    
+    # Process MAX Node
+    if is_maximizing:
+        max_evaluation = -math.inf
+        
+        # Recursively apply to successor states
+        for child in (left_child, right_child):
+            eval_score = alpha_beta_minimax(depth + 1, child, False, scores, target_depth, alpha, beta)
+            max_evaluation = max(max_evaluation, eval_score)
+            
+            # Step 2: At a MAX node, update alpha with the current best score.
+            alpha = max(alpha, max_evaluation)
+            
+            # Step 3: If alpha >= beta, prune remaining branches (beta cut-off).
+            if alpha >= beta:
+                print(f"  [Pruning] Beta Cut-off at MAX node index {node_index} (Alpha: {alpha} >= Beta: {beta})")
+                break  # Skip evaluating the remaining siblings
+                
+        # Step 6: Return the optimal value without evaluating pruned branches.
+        return max_evaluation
+        
+    # Process MIN Node
+    else:
+        min_evaluation = math.inf
+        
+        # Recursively apply to successor states
+        for child in (left_child, right_child):
+            eval_score = alpha_beta_minimax(depth + 1, child, True, scores, target_depth, alpha, beta)
+            min_evaluation = min(min_evaluation, eval_score)
+            
+            # Step 4: At a MIN node, update beta with the current best score.
+            beta = min(beta, min_evaluation)
+            
+            # Step 5: If beta <= alpha, prune remaining branches (alpha cut-off).
+            if beta <= alpha:
+                print(f"  [Pruning] Alpha Cut-off at MIN node index {node_index} (Beta: {beta} <= Alpha: {alpha})")
+                break  # Skip evaluating the remaining siblings
+                
+        # Step 6: Return the optimal value without evaluating pruned branches.
+        return min_evaluation
+
+# --- Execute the Program Simulation ---
+
+# Defining an array of 8 final terminal leaf node game scores.
+# In a standard Minimax traversal, all 8 values must be inspected.
+# With Alpha-Beta pruning, certain branches will be completely ignored.
+terminal_scores = [3, 5, 6, 9, 1, 2, 0, -1]
+
+# Calculate target depth based on total leaves (log2(8) = 3)
+tree_depth = int(math.log2(len(terminal_scores)))
+
+print("Starting Alpha-Beta Pruning Simulation...")
+print(f"Terminal Leaf Outcomes: {terminal_scores}")
+print("-" * 65)
+
+# Initialize alpha to -infinity and beta to +infinity
+initial_alpha = -math.inf
+initial_beta = math.inf
+
+# Start computation from root node index 0 at depth 0 with Maximizer turn active
+optimal_value = alpha_beta_minimax(
+    depth=0, 
+    node_index=0, 
+    is_maximizing=True, 
+    scores=terminal_scores, 
+    target_depth=tree_depth, 
+    alpha=initial_alpha, 
+    beta=initial_beta
+)
+
+print("-" * 65)
+print(f"The mathematically optimal score for the Maximizing Player is: {optimal_value}")
