@@ -1,0 +1,64 @@
+import math
+
+# Step 1: Define the evaluate function to score a game state.
+# For a raw game tree simulation, this function retrieves the static values 
+# assigned to the terminal leaf nodes when depth reaches 0.
+def evaluate(node_index, scores):
+    return scores[node_index]
+
+# Step 2-5: Implement the recursive Minimax decision function
+def minimax(depth, node_index, is_maximizing, scores, target_depth):
+    # Step 2: In the Minimax function, check base case (depth reached target or game over)
+    if depth == target_depth:
+        return evaluate(node_index, scores)
+    
+    # Step 5: Recursively apply to all successor states (left and right child branches)
+    left_child = node_index * 2
+    right_child = node_index * 2 + 1
+    
+    # Step 3: If maximising player, return the max score from successors.
+    if is_maximizing:
+        max_evaluation = -math.inf
+        
+        # Evaluate left successor
+        eval_left = minimax(depth + 1, left_child, False, scores, target_depth)
+        max_evaluation = max(max_evaluation, eval_left)
+        
+        # Evaluate right successor
+        eval_right = minimax(depth + 1, right_child, False, scores, target_depth)
+        max_evaluation = max(max_evaluation, eval_right)
+        
+        return max_evaluation
+        
+    # Step 4: If minimising player, return the min score from successors.
+    else:
+        min_evaluation = math.inf
+        
+        # Evaluate left successor
+        eval_left = minimax(depth + 1, left_child, True, scores, target_depth)
+        min_evaluation = min(min_evaluation, eval_left)
+        
+        # Evaluate right successor
+        eval_right = minimax(depth + 1, right_child, True, scores, target_depth)
+        min_evaluation = min(min_evaluation, eval_right)
+        
+        return min_evaluation
+
+# --- Execute the Program Simulation ---
+
+# Defining an array of 8 final terminal leaf node game scores.
+# This matches a balanced binary tree layout with a maximum depth of 3 (2^3 = 8 leaves).
+# Representing terminal score values: [3, 5, 2, 9, 12, 5, 23, 23]
+terminal_scores = [3, 5, 2, 9, 12, 5, 23, 23]
+
+# Calculate target depth based on total leaves (log2(8) = 3)
+tree_depth = int(math.log2(len(terminal_scores)))
+
+print("Starting Minimax Algorithm Simulation...")
+print(f"Terminal Leaf Outcomes: {terminal_scores}")
+print("-" * 50)
+
+# Start computation from root node index 0 at depth 0 with Maximizer turn active
+optimal_value = minimax(0, 0, True, terminal_scores, tree_depth)
+
+print(f"The mathematically optimal score for the Maximizing Player is: {optimal_value}")
